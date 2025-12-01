@@ -27,15 +27,15 @@
 
   1. Highway Low Density Version:
   ```bash
-   ./ns3 run hisol-vanets-highway-low-density  --simTime=60.0 --numVehicles=50
+   ./ns3 run hisol-vanets-highway-low-density --  --simTime=60.0 --numVehicles=50
 ```
   2. Urban Grid High Density Version:
 ```bash
-   ./ns3 run hisol-vanets-urban-grid-high-density  --simTime=60.0 --numVehicles=100
+   ./ns3 run hisol-vanets-urban-grid-high-density -- --simTime=60.0 --numVehicles=100
 ```
   3. Congestion Mixed Scenario Version:
 ```bash
-   ./ns3 run hisol-vanets-congestion-mixed-scenario --simTime=60.0 --numVehicles=150
+   ./ns3 run hisol-vanets-congestion-mixed-scenario -- --simTime=60.0 --numVehicles=150
 ```
   
   Custom Parameters:
