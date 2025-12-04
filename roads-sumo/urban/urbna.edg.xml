@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- urban.edg.xml - Urban street network -->
+<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <!-- Horizontal streets (West to East) -->
+    <!-- Row 0 -->
+    <edge id="h00_01" from="n00" to="n01" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h01_02" from="n01" to="n02" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h02_03" from="n02" to="n03" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 1 -->
+    <edge id="h10_11" from="n10" to="n11" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h11_12" from="n11" to="n12" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h12_13" from="n12" to="n13" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 2 -->
+    <edge id="h20_21" from="n20" to="n21" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h21_22" from="n21" to="n22" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h22_23" from="n22" to="n23" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 3 -->
+    <edge id="h30_31" from="n30" to="n31" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h31_32" from="n31" to="n32" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h32_33" from="n32" to="n33" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Horizontal streets (East to West) -->
+    <!-- Row 0 -->
+    <edge id="h01_00" from="n01" to="n00" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h02_01" from="n02" to="n01" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h03_02" from="n03" to="n02" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 1 -->
+    <edge id="h11_10" from="n11" to="n10" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h12_11" from="n12" to="n11" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h13_12" from="n13" to="n12" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 2 -->
+    <edge id="h21_20" from="n21" to="n20" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h22_21" from="n22" to="n21" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h23_22" from="n23" to="n22" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Row 3 -->
+    <edge id="h31_30" from="n31" to="n30" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h32_31" from="n32" to="n31" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="h33_32" from="n33" to="n32" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Vertical streets (South to North) -->
+    <!-- Column 0 -->
+    <edge id="v00_10" from="n00" to="n10" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v10_20" from="n10" to="n20" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v20_30" from="n20" to="n30" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 1 -->
+    <edge id="v01_11" from="n01" to="n11" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v11_21" from="n11" to="n21" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v21_31" from="n21" to="n31" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 2 -->
+    <edge id="v02_12" from="n02" to="n12" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v12_22" from="n12" to="n22" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v22_32" from="n22" to="n32" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 3 -->
+    <edge id="v03_13" from="n03" to="n13" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v13_23" from="n13" to="n23" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v23_33" from="n23" to="n33" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Vertical streets (North to South) -->
+    <!-- Column 0 -->
+    <edge id="v10_00" from="n10" to="n00" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v20_10" from="n20" to="n10" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v30_20" from="n30" to="n20" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 1 -->
+    <edge id="v11_01" from="n11" to="n01" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v21_11" from="n21" to="n11" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v31_21" from="n31" to="n21" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 2 -->
+    <edge id="v12_02" from="n12" to="n02" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v22_12" from="n22" to="n12" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v32_22" from="n32" to="n22" priority="2" numLanes="2" speed="13.89"/>
+    
+    <!-- Column 3 -->
+    <edge id="v13_03" from="n13" to="n03" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v23_13" from="n23" to="n13" priority="2" numLanes="2" speed="13.89"/>
+    <edge id="v33_23" from="n33" to="n23" priority="2" numLanes="2" speed="13.89"/>
+</edges>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- highway.edg.xml - Edge definitions -->
+<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <!-- Main highway segments (3 lanes) -->
+    <edge id="highway1" from="entry" to="n1" priority="3" numLanes="3" speed="33.33"/>
+    <edge id="highway2" from="n1" to="n2" priority="3" numLanes="3" speed="33.33"/>
+    <edge id="highway3" from="n2" to="n3" priority="3" numLanes="3" speed="33.33"/>
+    <edge id="highway4" from="n3" to="exit" priority="3" numLanes="3" speed="33.33"/>
+    
+    <!-- On-ramp -->
+    <edge id="onramp" from="onramp1" to="n1" priority="2" numLanes="1" speed="22.22"/>
+    
+    <!-- Off-ramp -->
+    <edge id="offramp" from="n3" to="offramp1" priority="2" numLanes="1" speed="22.22"/>
+</edges>

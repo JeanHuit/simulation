@@ -1,0 +1,10 @@
+total_sent,total_received,pdr,avg_neighbors,unique_vehicles,scenario,density,run
+0,0,0,0,0,highway,density-50,run-1
+0,0,0,0,0,highway,density-100,run-1
+0,0,0,0,0,highway,density-150,run-1
+0,0,0,0,0,mixed,density-50,run-1
+0,0,0,0,0,mixed,density-100,run-1
+0,0,0,0,0,mixed,density-150,run-1
+0,0,0,0,0,urban,density-50,run-1
+0,0,0,0,0,urban,density-100,run-1
+0,0,0,0,0,urban,density-150,run-1

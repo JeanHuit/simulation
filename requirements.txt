@@ -1,0 +1,33 @@
+# V2X ML Analysis - Python Requirements
+# Install with: pip install -r requirements.txt
+
+# Core Data Science
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Machine Learning
+scikit-learn>=1.0.0
+joblib>=1.1.0
+
+# Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Progress bars
+tqdm>=4.62.0
+
+# Jupyter
+jupyter>=1.0.0
+ipython>=7.0.0
+notebook>=6.4.0
+
+# Optional: Advanced ML (uncomment if needed)
+# xgboost>=1.5.0
+# lightgbm>=3.3.0
+# imbalanced-learn>=0.9.0  # For SMOTE
+# shap>=0.40.0  # For explainability
+
+# Optional: Big Data (uncomment if needed)
+# dask[complete]>=2021.10.0
+# pyarrow>=6.0.0  # For Parquet support
