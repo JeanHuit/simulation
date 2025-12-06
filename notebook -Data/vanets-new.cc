@@ -4,6 +4,7 @@
  *  - Multiple attacks: DDoS, Sybil, Replay, Jamming, Message Falsification
  *  - Mitigation techniques: Trust-based, ML-based, Hybrid, Rule-based
  *  - Detailed logging for analysis
+ *  - ML Features as specified in data.txt
  *
  * Works on NS-3.46 out of the box.
  */
@@ -24,6 +25,8 @@
 #include <algorithm>
 #include <set>
 #include <cmath>
+#include <queue>
+#include <limits>
 
 using namespace ns3;
 
@@ -44,6 +47,8 @@ static std::ofstream ddos_output;    // DDoS logs
 static std::ofstream msg_falsification_output; // Message falsification logs
 static std::ofstream replay_output;  // Replay logs
 static std::ofstream rssi_output;    // RSSI logs
+static std::ofstream features_output; // ML features output
+static std::ofstream detection_output; // Detection results output
 
 // -------------------------
 // Global Simulation Params
@@ -82,6 +87,31 @@ std::map<uint32_t, int> suspiciousCount; // Suspicious behavior count
 std::map<uint32_t, int> packetFreqCount; // Track packet frequency per node
 std::map<uint32_t, std::vector<Time>> packetTimestamps; // Track timestamps
 
+// Feature collection for ML
+struct BeaconFeatures {
+  Vector position;           // claimed_position (x,y)
+  Vector velocity;           // speed, heading
+  Time timestamp;           // timestamp
+  uint32_t neighborCount;   // neighbor_count (last window)
+  double distanceToNearestNeighbor; // distance_to_nearest_neighbor
+  double interArrivalTime;  // inter_arrival_time for messages from same src
+  double packetRate;        // packet_rate (pkts/s)
+  double avgPayloadSize;    // average payload size
+  double positionDelta;     // position_delta (claimed vs. expected path)
+  double speedDelta;        // speed_delta between GPS and inertial estimate
+  int clusterSize;          // clustering of identities (for Sybil detection)
+
+  BeaconFeatures() : position(0,0,0), velocity(0,0,0), neighborCount(0),
+                     distanceToNearestNeighbor(0), interArrivalTime(0),
+                     packetRate(0), avgPayloadSize(0), positionDelta(0),
+                     speedDelta(0), clusterSize(0) {}
+};
+
+// Per-node feature tracking
+std::map<uint32_t, std::queue<BeaconFeatures>> nodeFeatures;
+std::map<uint32_t, std::vector<Time>> nodeMessageTimes; // for inter-arrival calculation
+std::map<uint32_t, std::vector<double>> nodePayloadSizes; // for average payload calculation
+
 // -------------------------------
 // Enhanced BSM Application with Attack Capabilities
 // -------------------------------
@@ -117,6 +147,47 @@ private:
     Vector pos = mob->GetPosition();
     Vector vel = mob->GetVelocity();
 
+    // Calculate features for ML
+    BeaconFeatures features;
+    features.position = pos;
+    features.velocity = vel;
+    features.timestamp = Simulator::Now();
+
+    // Calculate speed
+    double speed = sqrt(vel.x*vel.x + vel.y*vel.y);
+
+    // Calculate heading (in radians)
+    double heading = atan2(vel.y, vel.x);
+
+    // Add to message times for inter_arrival calculation
+    nodeMessageTimes[m_node->GetId()].push_back(Simulator::Now());
+    if (nodeMessageTimes[m_node->GetId()].size() > 100) {
+      nodeMessageTimes[m_node->GetId()].erase(nodeMessageTimes[m_node->GetId()].begin());
+    }
+
+    // Calculate inter arrival time
+    if (nodeMessageTimes[m_node->GetId()].size() >= 2) {
+      Time lastTime = nodeMessageTimes[m_node->GetId()].back();
+      Time secondLastTime = *(nodeMessageTimes[m_node->GetId()].end() - 2);
+      features.interArrivalTime = (lastTime - secondLastTime).GetSeconds();
+    }
+
+    // Add to payload size history (assuming fixed size for now)
+    double payloadSize = 200.0; // Fixed size for this simulation
+    nodePayloadSizes[m_node->GetId()].push_back(payloadSize);
+    if (nodePayloadSizes[m_node->GetId()].size() > 50) {
+      nodePayloadSizes[m_node->GetId()].erase(nodePayloadSizes[m_node->GetId()].begin());
+    }
+
+    // Calculate average payload size
+    if (!nodePayloadSizes[m_node->GetId()].empty()) {
+      double sum = 0;
+      for (double size : nodePayloadSizes[m_node->GetId()]) {
+        sum += size;
+      }
+      features.avgPayloadSize = sum / nodePayloadSizes[m_node->GetId()].size();
+    }
+
     // Create BSM with additional fields for attack detection
     std::ostringstream msg;
     msg << "BSM," << m_node->GetId()
@@ -135,9 +206,9 @@ private:
         for (int i = 0; i < 10; i++) { // Send 10 packets at once
           Ptr<Packet> p = Create<Packet>((const uint8_t*)s.c_str(), s.length());
           m_socket->Send(p);
-          
-          ddos_output << Simulator::Now().GetSeconds() 
-                    << "," << m_node->GetId() 
+
+          ddos_output << Simulator::Now().GetSeconds()
+                    << "," << m_node->GetId()
                     << ",ddos_attack," << i << "\n";
         }
       }
@@ -155,10 +226,10 @@ private:
           std::string fakeS = fakeMsg.str();
           Ptr<Packet> p = Create<Packet>((const uint8_t*)fakeS.c_str(), fakeS.length());
           m_socket->Send(p);
-          
-          sybil_output << Simulator::Now().GetSeconds() 
-                     << "," << fakeId 
-                     << "," << m_node->GetId() 
+
+          sybil_output << Simulator::Now().GetSeconds()
+                     << "," << fakeId
+                     << "," << m_node->GetId()
                      << "," << (pos.x + i*10) << "," << (pos.y + i*10) << "\n";
         }
       }
@@ -169,9 +240,9 @@ private:
           std::string replayMsg = replayBuffers[m_node->GetId()].back();
           Ptr<Packet> p = Create<Packet>((const uint8_t*)replayMsg.c_str(), replayMsg.length());
           m_socket->Send(p);
-          
-          replay_output << Simulator::Now().GetSeconds() 
-                      << "," << m_node->GetId() 
+
+          replay_output << Simulator::Now().GetSeconds()
+                      << "," << m_node->GetId()
                       << "," << replayMsg << "\n";
         }
       }
@@ -187,9 +258,9 @@ private:
         std::string fakeS = fakeMsg.str();
         Ptr<Packet> p = Create<Packet>((const uint8_t*)fakeS.c_str(), fakeS.length());
         m_socket->Send(p);
-        
-        msg_falsification_output << Simulator::Now().GetSeconds() 
-                               << "," << m_node->GetId() 
+
+        msg_falsification_output << Simulator::Now().GetSeconds()
+                               << "," << m_node->GetId()
                                << "," << (pos.x + 500) << "," << (pos.y + 500) << "\n";
       }
       else
@@ -215,6 +286,23 @@ private:
     bsm_output << m_node->GetId() << "," << pos.x << "," << pos.y
             << "," << vel.x << "," << vel.y
             << "," << Simulator::Now().GetSeconds() << "\n";
+
+    // Store features for ML
+    nodeFeatures[m_node->GetId()].push(features);
+    if (nodeFeatures[m_node->GetId()].size() > 100) { // Keep last 100 features
+      nodeFeatures[m_node->GetId()].pop();
+    }
+
+    // Log features if we have enough data
+    if (nodeFeatures[m_node->GetId()].size() == 1) { // Log first feature
+      BeaconFeatures& f = nodeFeatures[m_node->GetId()].front();
+      features_output << m_node->GetId() << ","
+                    << f.position.x << "," << f.position.y << ","
+                    << speed << "," << heading << ","
+                    << f.timestamp.GetSeconds() << ","
+                    << f.interArrivalTime << ","
+                    << f.avgPayloadSize << "\n";
+    }
 
     // Schedule next transmission
     Simulator::Schedule(Seconds(m_interval), &EnhancedBsmApp::SendBsm, this);
@@ -445,7 +533,7 @@ void ReceivePacket(Ptr<Socket> socket)
 }
 
 // -------------------------
-// Neighbor Count (heuristic)
+// Neighbor Count (heuristic) with distance to nearest neighbor
 // -------------------------
 void LogNeighbors(NodeContainer nodes)
 {
@@ -455,16 +543,32 @@ void LogNeighbors(NodeContainer nodes)
     Vector pos_i = mob_i->GetPosition();
 
     uint32_t count = 0;
+    double minDistance = std::numeric_limits<double>::max();
 
     for (uint32_t j = 0; j < nodes.GetN(); j++)
     {
       if (i == j) continue;
       Ptr<MobilityModel> mob_j = nodes.Get(j)->GetObject<MobilityModel>();
-      if (mob_i->GetDistanceFrom(mob_j) < 250.0)  // Communication range approx
+      double distance = mob_i->GetDistanceFrom(mob_j);
+
+      if (distance < 250.0) {  // Communication range approx
         count++;
+      }
+
+      // Track minimum distance
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
     }
 
-    neighbor_output << Simulator::Now().GetSeconds() << "," << i << "," << count << "\n";
+    neighbor_output << Simulator::Now().GetSeconds() << "," << i << "," << count << "," << minDistance << "\n";
+
+    // Update features with neighbor information
+    if (nodeFeatures.find(i) != nodeFeatures.end() && !nodeFeatures[i].empty()) {
+      BeaconFeatures& f = nodeFeatures[i].back();  // Get last feature
+      f.neighborCount = count;
+      f.distanceToNearestNeighbor = minDistance;
+    }
   }
 
   Simulator::Schedule(Seconds(0.2), &LogNeighbors, nodes);
@@ -552,33 +656,39 @@ int main(int argc, char *argv[])
   // Output files
   bsm_output.open("bsm_log.csv");
   bsm_output << "nodeId,posX,posY,velX,velY,timestamp" << "\n";
-  
+
   attack_output.open("attack_log.csv");
   attack_output << "timestamp,attackerId,attackType,details" << "\n";
-  
+
   mitigation_output.open("mitigation_log.csv");
   mitigation_output << "timestamp,nodeId,mitigationType,details" << "\n";
-  
+
   trust_output.open("trust_log.csv");
   trust_output << "timestamp,nodeId,trustScore,lowTrustFlag" << "\n";
-  
+
   ml_output.open("ml_detection_log.csv");
   ml_output << "timestamp,nodeId,eventType,suspiciousCount" << "\n";
-  
+
   neighbor_output.open("neighbor_log.csv");
-  neighbor_output << "timestamp,nodeId,neighborCount" << "\n";
-  
+  neighbor_output << "timestamp,nodeId,neighborCount,minDistance" << "\n";
+
   jammer_output.open("jammer_log.csv");
   jammer_output << "timestamp,jammerId,eventType" << "\n";
-  
+
   sybil_output.open("sybil_log.csv");
   sybil_output << "timestamp,fakeId,attackerId,posX,posY" << "\n";
-  
+
   ddos_output.open("ddos_log.csv");
   ddos_output << "timestamp,attackerId,attackType,detail" << "\n";
-  
+
   msg_falsification_output.open("msg_falsification_log.csv");
   msg_falsification_output << "timestamp,attackerId,fakePosX,fakePosY" << "\n";
+
+  features_output.open("features_log.csv");
+  features_output << "nodeId,posX,posY,speed,heading,timestamp,interArrivalTime,avgPayloadSize" << "\n";
+
+  detection_output.open("detection_log.csv");
+  detection_output << "timestamp,nodeId,attackType,detectionScore" << "\n";
 
   NodeContainer vehicles;
   vehicles.Create(g_numVehicles);
@@ -713,6 +823,8 @@ int main(int argc, char *argv[])
   sybil_output.close();
   ddos_output.close();
   msg_falsification_output.close();
+  features_output.close();
+  detection_output.close();
 
   return 0;
 }
