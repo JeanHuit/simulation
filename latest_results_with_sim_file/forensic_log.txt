@@ -1,0 +1,88 @@
+
+=== FORENSIC ANALYSIS REPORT ===
+Timestamp: 5s
+
+ATTACK SUMMARY:
+DDoS Attackers: 1
+Sybil Attackers: 1
+Replay Attackers: 0
+Jammers: 1
+Falsification Attackers: 0
+
+ISOLATED NODES: 3
+  Node 0: multiple_threat_reports
+  Node 2: confirmed_attacker
+  Node 25: multiple_threat_reports
+
+THREAT INTELLIGENCE DATABASE: 35 reports
+
+TRUST SCORE DISTRIBUTION:
+  Very Low (<0.3): 3
+  Low (0.3-0.5): 0
+  Medium (0.5-0.7): 0
+  High (>0.7): 129
+
+SECURITY POLICY RECOMMENDATIONS:
+
+================================
+
+
+=== FORENSIC ANALYSIS REPORT ===
+Timestamp: 15s
+
+ATTACK SUMMARY:
+DDoS Attackers: 1
+Sybil Attackers: 1
+Replay Attackers: 1
+Jammers: 1
+Falsification Attackers: 1
+
+ISOLATED NODES: 5
+  Node 0: multiple_threat_reports
+  Node 2: confirmed_attacker
+  Node 4: high_suspicious_activity
+  Node 6: high_suspicious_activity
+  Node 25: multiple_threat_reports
+
+THREAT INTELLIGENCE DATABASE: 85 reports
+
+TRUST SCORE DISTRIBUTION:
+  Very Low (<0.3): 5
+  Low (0.3-0.5): 0
+  Medium (0.5-0.7): 0
+  High (>0.7): 127
+
+SECURITY POLICY RECOMMENDATIONS:
+
+================================
+
+
+=== FORENSIC ANALYSIS REPORT ===
+Timestamp: 25s
+
+ATTACK SUMMARY:
+DDoS Attackers: 1
+Sybil Attackers: 1
+Replay Attackers: 1
+Jammers: 1
+Falsification Attackers: 1
+
+ISOLATED NODES: 5
+  Node 0: multiple_threat_reports
+  Node 2: confirmed_attacker
+  Node 4: high_suspicious_activity
+  Node 6: high_suspicious_activity
+  Node 25: multiple_threat_reports
+
+THREAT INTELLIGENCE DATABASE: 135 reports
+
+TRUST SCORE DISTRIBUTION:
+  Very Low (<0.3): 5
+  Low (0.3-0.5): 0
+  Medium (0.5-0.7): 0
+  High (>0.7): 127
+
+SECURITY POLICY RECOMMENDATIONS:
+
+================================
+

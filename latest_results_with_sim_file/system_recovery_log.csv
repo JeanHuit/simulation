@@ -1,0 +1,6 @@
+timestamp,nodeId,event,details
+5,recovery_check_started
+10,recovery_check_started
+15,recovery_check_started
+20,recovery_check_started
+25,recovery_check_started

@@ -1,0 +1,6 @@
+timestamp,nodeId,event,reason
+2,0,isolated,multiple_threat_reports
+3,25,isolated,multiple_threat_reports
+4,2,isolated,confirmed_attacker
+5,4,isolated,high_suspicious_activity
+5,6,isolated,high_suspicious_activity
